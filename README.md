@@ -1,6 +1,10 @@
 # screenshot-tester
 Automate testing of your web app with absolutely no code
 
+# Project status
+
+Base functionality is working but acess to features is not implemented (currently all code is being run by @Test annotations of jUnit). Still in early development.
+
 # How to use
 1. Use crawler mode / put urls you want to test in a txt file
 2. Run screenshot mode -> see results in screenshots dir
