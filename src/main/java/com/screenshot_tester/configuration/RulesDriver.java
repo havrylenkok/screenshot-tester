@@ -17,7 +17,6 @@ import org.junit.runner.Description;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.io.TemporaryFilesystem;
-import ru.yandex.qatools.allure.annotations.Attachment;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.comparison.ImageDiff;
@@ -50,23 +49,6 @@ public class RulesDriver {
 
   protected static int windowW = 1280;
   protected static int windowH = 860;
-
-  @Rule
-  public TestWatcher screenshotOnFailure = new TestWatcher() {
-    @Override
-    protected void failed(Throwable e, Description description) {
-      super.failed(e, description);
-      System.out.println(
-          "Failed test: " + description.getClassName() + "::" + description.getMethodName());
-      makeScreenshotOnFailure();
-
-    }
-
-    @Attachment("Screenshot on failure")
-    public byte[] makeScreenshotOnFailure() {
-      return ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
-    }
-  };
 
   @Rule
   public TestRule logStarting = new TestWatcher() {

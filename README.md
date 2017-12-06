@@ -3,15 +3,35 @@ Automate testing of your web app with absolutely no code
 
 # Project status
 
-Base functionality is working but acess to features is not implemented (currently all code is being run by @Test annotations of jUnit). Still in early development.
+Base functionality is working but crawler mode is undpredictable. Still in development.
+
+# Build
+
+```
+1. https://github.com/robben1234/screenshot-tester.git && cd screenshot-tester
+2. mvn package
+```
+
+# Usage 
+
+```
+java screenshot_tester options...
+ -i FILE   : input directory (default: screenshots)
+ -m VAL    : modes of app: 
+             	 - !!!LAB!!! crawl. Example:  -m crawl -u urls.txt -s seed_urls.txt
+             	 - screen. Example: -m screen -o screenshots_dir -u urls.txt
+             	 - diff (results in dir {-i val}-diff) Example: -m diff -i screenshots_dir -u urls.txt
+ -o OUTPUT : output directory (default: screenshots)
+ -s FILE   : text file of seed urls for crawler (default: seedUrls.txt)
+ -u FILE   : text file of urls (default: urls.txt)
+ ```
 
 # How to use
-1. Use crawler mode / put urls you want to test in a txt file
-2. Run screenshot mode -> see results in screenshots dir
+1. Use crawler mode `java screenshot_tester -m crawl` / put urls you want to test in a txt file
+2. Run screenshot mode `java screenshot_tester -m screen` -> see results in screenshots dir
 3. Deploy features / do development or other stuff that will influence your web app
-4. Run diff mode -> see everything that is different from previous state of app in screenshots-diff dir
+4. Run diff mode `java screenshot_tester -m diff` -> see everything that is different from previous state of app in screenshots-diff dir
 
 # Todo
-- Parser class so the tool could be ran via console
 - Auth method so user can specify where should Selenium log in before running screenshotter
 - Crawler improvements (Auth, etc...)

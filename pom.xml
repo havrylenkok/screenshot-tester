@@ -3,7 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <repositories>
     <repository>
       <id>forplay-legacy</id>
@@ -11,14 +10,10 @@
     </repository>
   </repositories>
 
-  <groupId>ScreenshotTester</groupId>
-  <artifactId>ScreenshotTester</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <properties>
-    <aspectj.version>1.8.4</aspectj.version>
-    <allure.version>2.6</allure.version>
-  </properties>
+  <groupId>com.screenshot_tester</groupId>
+  <artifactId>screenshot_tester</artifactId>
+  <version>0.1</version>
+  <url>https://github.com/robben1234/screenshot-tester</url>
 
   <dependencies>
     <dependency>
@@ -31,12 +26,6 @@
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-chrome-driver</artifactId>
       <version>3.5.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>ru.yandex.qatools.allure</groupId>
-      <artifactId>allure-junit-adaptor</artifactId>
-      <version>1.5.4</version>
     </dependency>
 
     <dependency>
@@ -55,19 +44,6 @@
       <groupId>org.apache.maven.surefire</groupId>
       <artifactId>surefire-api</artifactId>
       <version>2.19</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>1.3</version>
     </dependency>
 
     <dependency>
@@ -100,12 +76,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.kevinsawicki</groupId>
-      <artifactId>http-request</artifactId>
-      <version>6.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>ru.yandex.qatools.ashot</groupId>
       <artifactId>ashot</artifactId>
       <version>1.5.2</version>
@@ -126,51 +96,12 @@
       <version>2.33</version>
     </dependency>
 
-
   </dependencies>
 
-  <reporting>
-    <excludeDefaults>true</excludeDefaults>
-    <plugins>
-      <plugin>
-        <groupId>ru.yandex.qatools.allure</groupId>
-        <artifactId>allure-maven-plugin</artifactId>
-        <version>${allure.version}</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
   <build>
+    <finalName>screenshot_tester</finalName>
+
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <configuration>
-
-          <forkCount>5</forkCount>
-          <reuseForks>false</reuseForks>
-          <skip>false</skip>
-          <testFailureIgnore>false</testFailureIgnore>
-          <argLine>
-            -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
-          </argLine>
-          <properties>
-            <property>
-              <name>listener</name>
-              <value>ru.yandex.qatools.allure.junit.AllureRunListener</value>
-            </property>
-          </properties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>${aspectj.version}</version>
-          </dependency>
-
-        </dependencies>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -179,7 +110,23 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <!-- Jar file entry point -->
+              <mainClass>com.screenshot_tester.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+
     </plugins>
   </build>
+
 
 </project>
