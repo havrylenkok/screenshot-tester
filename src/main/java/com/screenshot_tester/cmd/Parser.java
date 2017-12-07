@@ -7,6 +7,7 @@ import org.kohsuke.args4j.Option;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Parser {
@@ -34,6 +35,9 @@ public class Parser {
     @Option(name = "-s", usage = "text file of seed urls for crawler")
     private File seedUrls = new File("seedUrls.txt");
 
+    @Option(name = "-a", usage = "auth via Selenium before taking screenshots ("+SCREEN_MODE+","+CRAWL_MODE+" modes). It waits 10 seconds after clicking login button so your loaders should be finished by the time it go to the next page.\nFormat: -a \"login_page_url username_xpath username_value password_xpath password_value login_button_xpath\"")
+    private String authParams;
+
     @Argument
     private List<String> arguments = new ArrayList<String>();
 
@@ -58,13 +62,27 @@ public class Parser {
             return;
         }
 
+        HashMap<String, String> authParamsMap = null;
+        if(authParams != null) {
+            authParamsMap = new HashMap<>();
+
+            String[] params = authParams.split(" ");
+            assert params.length == 6;
+            authParamsMap.put("url", params[0]);
+            authParamsMap.put("usernameXpath", params[1]);
+            authParamsMap.put("usernameValue", params[2]);
+            authParamsMap.put("passwordXpath", params[3]);
+            authParamsMap.put("passwordValue", params[4]);
+            authParamsMap.put("buttonXpath", params[5]);
+        }
+
         Command commands = new Command();
         switch (mode) {
             case SCREEN_MODE:
-                commands.takeScreenshots(urls.getAbsolutePath(), out.getAbsolutePath());
+                commands.takeScreenshots(urls.getAbsolutePath(), out.getAbsolutePath(), authParamsMap);
                 break;
             case DIFF_MODE:
-                commands.compareScreenshots(urls.getAbsolutePath(), input.getAbsolutePath());
+                commands.compareScreenshots(urls.getAbsolutePath(), input.getAbsolutePath(), authParamsMap);
                 break;
             case CRAWL_MODE:
                 commands.crawl(urls.getAbsolutePath(), seedUrls.getAbsolutePath());

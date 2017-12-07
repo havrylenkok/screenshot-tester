@@ -24,12 +24,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.screenshot_tester.configuration.RulesDriver.aShot;
 
 public class Command extends RulesDriver {
+
+    private static final Boolean IS_DEV = true;
 
     public String compileImagePath(File screenshotDirectory, String url) {
         return Paths.get(screenshotDirectory.getAbsolutePath(), url.replaceAll("\\W", "") + ".png").toString();
@@ -47,18 +53,43 @@ public class Command extends RulesDriver {
     }
 
     protected void tearDownSelenium() {
-        if (!System.getProperty("os.name").startsWith("Mac OS X")) {
+        if (!IS_DEV) {
             WebDriverRunner.getWebDriver().quit();
             clearTempFs();
         }
     }
 
-    public void takeScreenshots(String urlsFilePath, String outputDirPath) throws IOException {
+    protected void performAuth(Map<String, String> authParams) {
+        String url = authParams.get("url");
+        String usernameXpath = authParams.get("usernameXpath");
+        String usernameValue = authParams.get("usernameValue");
+        String passwordXpath = authParams.get("passwordXpath");
+        String passwordValue = authParams.get("passwordValue");
+        String buttonXpath = authParams.get("buttonXpath");
+        open(url);
+        $(byXpath(usernameXpath)).shouldBe(visible).val(usernameValue);
+        $(byXpath(passwordXpath)).shouldBe(visible).val(passwordValue);
+        $(byXpath(buttonXpath)).shouldBe(visible).hover().click();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Login is successful");
+    }
+
+    public void takeScreenshots(String urlsFilePath, String outputDirPath, Map<String, String> authParams) throws IOException {
 
         setUpSelenium();
+        if (authParams != null) {
+            performAuth(authParams);
+        }
 
         File screenshotDirectory = new File(outputDirPath);
-        assert screenshotDirectory.exists() || screenshotDirectory.mkdir(); // create dir if not exists
+        if (!screenshotDirectory.exists()) {
+            screenshotDirectory.mkdir(); // create dir if not exists
+            assert screenshotDirectory.exists() == true;
+        }
         File urls = new File(urlsFilePath);
         Stream<String> stream = Files.lines(urls.toPath());
         stream.forEach(url -> {
@@ -67,6 +98,7 @@ public class Command extends RulesDriver {
                 BufferedImage screenshot = aShot.takeScreenshot(WebDriverRunner.getWebDriver()).getImage();
                 File output = new File(compileImagePath(screenshotDirectory, url));
                 output.createNewFile();
+                assert output.exists() == true;
                 ImageIO.write(screenshot, "png", output);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -77,8 +109,11 @@ public class Command extends RulesDriver {
         tearDownSelenium();
     }
 
-    public void compareScreenshots(String urlsFilePath, String inputDirPath) throws IOException {
+    public void compareScreenshots(String urlsFilePath, String inputDirPath, Map<String, String> authParams) throws IOException {
         setUpSelenium();
+        if (authParams != null) {
+            performAuth(authParams);
+        }
 
         File originalScreenshots = new File(inputDirPath);
         if (!originalScreenshots.exists()) {
@@ -86,7 +121,10 @@ public class Command extends RulesDriver {
             throw new NoSuchFileException(originalScreenshots.getAbsolutePath());
         }
         File diffScreenshots = new File(originalScreenshots.getAbsolutePath().concat("-diff"));
-        assert diffScreenshots.exists() || diffScreenshots.mkdir(); // create dir if not exists
+        if (!diffScreenshots.exists()) {
+            diffScreenshots.mkdir(); // create dir if not exists
+            assert diffScreenshots.exists() == true;
+        }
         File urls = new File(urlsFilePath);
         Stream<String> stream = Files.lines(urls.toPath());
         stream.forEach(url -> {
@@ -98,10 +136,11 @@ public class Command extends RulesDriver {
 
                 ImageDiff diff = imgDiffer.makeDiff(expected, actual);
 
-                if(diff.hasDiff()) {
+                if (diff.hasDiff()) {
                     BufferedImage diffImg = diff.getMarkedImage();
                     File output = new File(compileImagePath(diffScreenshots, url));
                     output.createNewFile();
+                    assert output.exists() == true;
                     ImageIO.write(diffImg, "png", output);
                 }
 

@@ -16,6 +16,9 @@ Base functionality is working but crawler mode is undpredictable. Still in devel
 
 ```
 java screenshot_tester options...
+ -a VAL    : auth via Selenium before taking screenshots (screen,crawl modes). It waits 10 seconds after clicking login button so your
+             loaders should be finished by the time it go to the next page.
+             Format: -a "login_page_url username_xpath username_value password_xpath password_value login_button_xpath"
  -i FILE   : input directory (default: screenshots)
  -m VAL    : modes of app: 
              	 - !!!LAB!!! crawl. Example:  -m crawl -u urls.txt -s seed_urls.txt
