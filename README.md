@@ -36,5 +36,4 @@ java screenshot_tester options...
 4. Run diff mode `java screenshot_tester -m diff` -> see everything that is different from previous state of app in screenshots-diff dir
 
 # Todo
-- Auth method so user can specify where should Selenium log in before running screenshotter
 - Crawler improvements (Auth, etc...)
