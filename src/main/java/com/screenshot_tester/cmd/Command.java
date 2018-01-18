@@ -1,5 +1,6 @@
 package com.screenshot_tester.cmd;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import com.screenshot_tester.configuration.RulesDriver;
@@ -10,6 +11,7 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -67,6 +69,10 @@ public class Command extends RulesDriver {
         String passwordValue = authParams.get("passwordValue");
         String buttonXpath = authParams.get("buttonXpath");
         open(url);
+        if(authParams != null && authParams.containsKey("loader")) {
+            By loader = byXpath(authParams.get("loader"));
+            $(loader).shouldBe(Condition.hidden);
+        }
         $(byXpath(usernameXpath)).shouldBe(visible).val(usernameValue);
         $(byXpath(passwordXpath)).shouldBe(visible).val(passwordValue);
         $(byXpath(buttonXpath)).shouldBe(visible).hover().click();
@@ -94,6 +100,10 @@ public class Command extends RulesDriver {
         Stream<String> stream = Files.lines(urls.toPath());
         stream.forEach(url -> {
             open(url);
+            if(authParams != null && authParams.containsKey("loader")) {
+                By loader = byXpath(authParams.get("loader"));
+                $(loader).shouldBe(Condition.hidden);
+            }
             try {
                 BufferedImage screenshot = aShot.takeScreenshot(WebDriverRunner.getWebDriver()).getImage();
                 File output = new File(compileImagePath(screenshotDirectory, url));
